@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>将其他地图坐标转换为微信地图的demo</title>
+</head>
+<body>
+
+<!-- 引入微信sdk js 关于微信sdk开发请大家去微信公众平台开发者文档中心
+看相应使用说明，附上开发者文档地址:http://mp.weixin.qq.com/wiki/7/2d301d4b757dedc333b9a9854b457b47.html
+-->
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<!-- 引入微信地图坐标转换API -->
+<script src="http://map.qq.com/api/js?v=2.exp&libraries=convertor"></script>
+<script>
+    var ua = window.navigator.userAgent;
+    if (ua.toLowerCase().indexOf('micromessenger') !== -1) {
+        //在微信环境中访问
+        wx.ready(function(){
+            //转换百度坐标为腾讯坐标  3 代表百度坐标
+            qq.maps.convertor.translate(new qq.maps.LatLng(parseFloat(33.169858/*纬度*/,116.2659/*经度 浮点类型*/), 3, function(res){
+                var coArr = res[0];
+                //coArr为Object 里面有lat属性代表纬度,lng属性代表经度
+                wx.openLocation({
+                    latitude: coArr.lat, // 纬度，浮点数，范围为90 ~ -90
+                    longitude: coArr.lng, // 经度，浮点数，范围为180 ~ -180。
+                    name: hotleName, // 位置名
+                    address: hotleAddress, // 地址详情说明
+                    scale: 20, // 地图缩放级别,整形值,范围从1~28。默认为最大
+                    infoUrl: '' // 在查看位置界面底部显示的超链接,可点击跳转
+                });
+            }));
+        });
+    }
+</script>
+</body>
+</html>
