@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>自适应垂直居中容器内的元素</title>
+    <style type="text/css">
+        /*
+                什么是inline-box?inline-box可以理解为同一行上相邻排列的inline-level(包括display为inline-block、
+            table-cell等)元素会自动形成一个匿名包含块包裹住了这些紧密相邻排列的inline-level元素。如果inline-
+            level元素中含有block-level元素则在该block元素的左右分别形成多个inline-box。
+        */
+        body,div,p{margin:0;padding:0;}
+        .container{
+            width:500px;
+            height:400px;
+            background-color:green;
+            text-align:center;
+        }
+        .container:after{
+            /*
+                    创建一个相当于虚拟的inline-level元素并设置其高度为
+                100%使inline-box盒子的高度跟包含容器的高度一样,然后
+                设置包含容器内inline-level元素的vertical-align:midd
+                -le即可实现内部inline-level元素在包含容器中自适应垂
+                直居中。
+                    包含容器内的inline-level元素会自动排成一行(如果包
+                含容器足够宽的话,如果包含容器的宽度不足以装下所有内部
+                inline-level元素的话则会出现比较怪的结果,可见后面附图
+                上的解释)并形成IFC而line-box的高度由IFC中inline-level
+                元素中高度最高的元素的高度决定，而IFC内的inline-level
+                元素的垂直位置有vertical-align属性决定。
+            */
+            content:'';
+            display:inline-block;
+            height:100%;
+            width:0;
+            font-size:0;
+            vertical-align:middle;
+            visibility:hidden;
+        }
+        .content{
+            width:200px;
+            background-color:#0051a8;
+        }
+        .ifc-item{
+            /*让内部元素变成inline-level元素*/
+            display:inline-block;
+            /*这个css样式会导致inline-level元素相对于inline-box盒子垂直居中*/
+            vertical-align:middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img class="ifc-item" src="images/loadingImg.png"/>
+        <p class="ifc-item content">
+            我是段落文字我是段落文字
+            我是段落文字我是段落文字
+            我是段落文字我是段落文字
+            我是段落文字我是段落文字
+            我是段落文字我是段落文字
+            我是段落文字我是段落文字
+        </p>
+        <span class="ifc-item">立即抢</span>
+    </div>
+</body>
+</html>
