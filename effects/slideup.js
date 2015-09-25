@@ -1,36 +1,71 @@
 /**
- * Created by Administrator on 2015/7/9.
+ * Created by Administrator on 2015/9/9.
  */
 /*
- @desc ÀàËÆÅóÓÑÈ¦ÏòÉÏ»¬¶¯Ò³ÃæÏÔÊ¾ÕıÔÚ¼ÓÔØµÄ×ªÈ¦Ğ§¹û
- @param {Element} slideEle »¬¶¯ÇøÓòµÄÔªËØ
- @param {Element} loadingEle ÏÔÊ¾ÕıÔÚ¼ÓÔØĞ§¹ûµÄÔªËØ
- @param {function} fn µ±ÏÔÊ¾ÕıÔÚ¼ÓÔØÔªËØ¼°loadingĞ§¹ûÊ±ÒªÖ´ĞĞµÄfunctionÒÔ±ã¼ÓÔØÊı¾İ
+ @desc ç±»ä¼¼æœ‹å‹åœˆå‘ä¸Šæ»‘åŠ¨é¡µé¢æ˜¾ç¤ºæ­£åœ¨åŠ è½½çš„è½¬åœˆæ•ˆæœ
+ @param {Element} slideEle æ»‘åŠ¨åŒºåŸŸçš„å…ƒç´ 
+ @param {Element} loadingEle æ˜¾ç¤ºæ­£åœ¨åŠ è½½æ•ˆæœçš„å…ƒç´ 
+ @param {function} fn å½“æ˜¾ç¤ºæ­£åœ¨åŠ è½½å…ƒç´ åŠloadingæ•ˆæœæ—¶è¦æ‰§è¡Œçš„functionä»¥ä¾¿åŠ è½½æ•°æ®
  */
-var loadMore = (function(){
-    return function(slideEle,loadingEle,fn){
-        slideEle.addEventListener('touchmove',(function(now){return function(){
-            var clientHeight = document.documentElement.clientHeight;
-
-            //¼ÓÔØ¸ü¶àÇøÓò(¼´loadingÇøÓò)¾àÀëÆÁÄ»¿ÉÊÓÇøÓò¶¥²¿µÄ¾àÀë
-            var distance = loadingEle.getBoundingClientRect().top;
-            var len = (new Date().getTime()-now)/1000;
-            //console.log('Ê±¼ä²îÎª:'+len+'Ãë');
-            if(distance+30<=clientHeight){
-                if(!/ pullUp-relative/.test(loadingEle.className)){
-                    loadingEle.className +=' pullUp-relative';
+define(function(){
+    var loadMore = (function(){
+        return function(slideEle,loadingEle,fn){
+            var startY = 0,
+                endY = 0,
+            //æ»‘åŠ¨æ–¹å‘
+                slideOrient = null,
+                timer,
+                clientHeight = document.documentElement.clientHeight,
+                isExecuted = false;
+            slideEle.addEventListener('touchstart',function(evt){
+                startY = evt.touches[0].pageY;
+            },false);
+            slideEle.addEventListener('touchmove',(function(now){return function(event){
+                var arg = arguments;
+                if(slideOrient){
+                    endY = event.touches[0].pageY;
+                    if(endY-startY>0){
+                        //è¡¨é¢ç”¨æˆ·æ˜¯å‘ä¸‹æ»‘åŠ¨å±å¹•ç›´æ¥return;
+                        return;
+                    }else{
+                        slideOrient = 'up';
+                    }
                 }
-                fn();
-                now = new Date().getTime();
-            }else if(distance>clientHeight&&(len<=2)){
-                /*
-                 ½â¾ö»¬¶¯µÄÊ±ºòÓÉÓÚ¹ßĞÔµ¼ÖÂÊÖÖ¸Àë¿ªÒ³ÃæÖ®ºóÒ³Ãæ¿ÉÄÜ»¹»áÏòÉÏ»¬¶¯Ò»¶Î¾àÀë,
-                 ÕâÀïÉèÖÃµÄÑÓÊ±Ê±¼äÎª2Ãë
-                 */
-                setTimeout(arguments.callee,100);
-            }else{
-                now = new Date().getTime();
-            }
-        };})(new Date().getTime()));
-    };
-})();
+
+                //åŠ è½½æ›´å¤šåŒºåŸŸ(å³loadingåŒºåŸŸ)è·ç¦»å±å¹•å¯è§†åŒºåŸŸé¡¶éƒ¨çš„è·ç¦»
+                var distance = loadingEle.getBoundingClientRect().top;
+                var len = (new Date().getTime()-now)/1000;
+                //console.log('æ—¶é—´å·®ä¸º:'+len+'ç§’');
+                if(distance+30<=clientHeight && !isExecuted){
+                    if(!/ pullUp-relative/.test(loadingEle.className)){
+                        loadingEle.className +=' pullUp-relative';
+                    }
+                    fn();
+                    now = new Date().getTime();
+                    isExecuted = true;
+                }else if(distance>clientHeight&&(len<=2)){
+                    /*
+                     è§£å†³æ»‘åŠ¨çš„æ—¶å€™ç”±äºæƒ¯æ€§å¯¼è‡´æ‰‹æŒ‡ç¦»å¼€é¡µé¢ä¹‹åé¡µé¢å¯èƒ½è¿˜ä¼šå‘ä¸Šæ»‘åŠ¨ä¸€æ®µè·ç¦»,
+                     è¿™é‡Œè®¾ç½®çš„å»¶æ—¶æ—¶é—´ä¸º2ç§’
+                     */
+                    if(timer){
+                        return false;
+                    }
+                    isExecuted = false;
+                    timer = setTimeout(function(){
+                        clearTimeout(timer);
+                        timer = null;
+                        arg.callee();
+                    },100);
+                }else{
+                    now = new Date().getTime();
+                }
+            };})(new Date().getTime()));
+            slideEle.addEventListener('touchend',function(evt){
+                //é‡ç½®æ»‘åŠ¨æ–¹å‘çš„å€¼ä¸ºnull
+                slideOrient = null;
+            },false);
+        };
+    })();
+    return loadMore;
+});
