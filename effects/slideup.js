@@ -12,10 +12,11 @@ define(function(){
         return function(slideEle,loadingEle,fn){
             var startY = 0,
                 endY = 0,
-            //滑动方向
+                //滑动方向
                 slideOrient = null,
                 timer,
                 clientHeight = document.documentElement.clientHeight,
+                //表示回调函数fn是否执行完毕
                 isExecuted = false;
             slideEle.addEventListener('touchstart',function(evt){
                 startY = evt.touches[0].pageY;
