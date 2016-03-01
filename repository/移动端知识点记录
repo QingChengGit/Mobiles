@@ -1,0 +1,9 @@
+webapp中一定加上的几个属性：
+html * {
+    outline:none; //不显示外部虚线框
+    -webkit-tap-highlight-color:rgba(0,0,0,0); //触摸高亮颜色透明
+}
+
+body {
+    -webkit-font-smoothing:antialiased;// 字体平滑
+}
