@@ -1,0 +1,21 @@
+webapp中一定加上的几个属性：
+html * {
+    outline:none; //不显示外部虚线框
+    -webkit-tap-highlight-color:rgba(0,0,0,0); //触摸高亮颜色透明
+}
+
+body {
+    -webkit-font-smoothing:antialiased;// 字体平滑
+}
+
+IOS系统中如果嵌入了IFrame其无法显示滚动条,此时需要设置下包裹IFrame的DIV的如下属性:
+.wrapDiv {
+    -webkit-overflow-scrolling: touch;
+    overflow: auto;
+}
+以便让超出DIV的内容可以通过touch来滚动
+
+在微信浏览器中如果网页上有二维码图片,要让长按图片能够弹出识别图中二维码的菜单,则也没的viewport的initscale的值必须
+大于1,否则页面上的二维码图片长按之后弹不出来识别图中二维码的菜单!因为其实图片的可识别区域往下了,偏移距离经过测试发现
+为往下,往右都是64PX,据说是因为因为initscale小于1之后微信不能识别微信顶部的工具栏高度了,而微信顶部的工具栏高度就是
+64P。
